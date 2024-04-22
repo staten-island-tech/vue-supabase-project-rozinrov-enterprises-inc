@@ -27,6 +27,8 @@ async function signUpNewUser() {
   })
 }
 
+signUpNewUser()
+
 async function signInWithEmail() {
   const { data, error } = await supabase.auth.signInWithPassword({
     email: 'example@email.com',

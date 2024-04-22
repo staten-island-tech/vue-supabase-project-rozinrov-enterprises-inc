@@ -18,6 +18,7 @@ async function signUpNewUser() {
     },
   })
 }
+
 </script>
 
 <template>
