@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { supabase } from './lib/supabaseClient'
+import { RouterLink, RouterView } from 'vue-router'
+
 
 const users = ref([])
 
@@ -17,7 +19,7 @@ console.log(users)
 
 async function signUpNewUser() {
   const { data, error } = await supabase.auth.signUp({
-    email: 'example2@email.com',
+    email: 'example3@email.com',
     password: 'example-password',
     options: {
       emailRedirectTo: 'https://example.com/welcome',
@@ -25,7 +27,6 @@ async function signUpNewUser() {
   })
 }
 
-signUpNewUser()
 async function signInWithEmail() {
   const { data, error } = await supabase.auth.signInWithPassword({
     email: 'example@email.com',
@@ -41,7 +42,13 @@ async function signOut() {
 </script>
 
 <template>
-
+  <div>
+    <h1>a</h1>
+    <nav>
+      <RouterLink to="/register">Register</RouterLink>
+    </nav>
+    <RouterView />
+  </div>
 </template>
 
 <style scoped>
