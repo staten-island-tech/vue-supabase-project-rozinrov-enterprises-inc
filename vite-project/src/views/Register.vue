@@ -6,17 +6,21 @@ const name = ref('')
 const email = ref('')
 const password = ref('')
 
-console.log('hi')
+
 
 async function signUpNewUser() {
-  const { data, error } = await supabase.auth.signUp({
-    name: name.value,
+  const userData = await supabase.auth.signUp({
     email: email.value,
-    password: name.value,
+    password: password.value,
     options: {
       emailRedirectTo: 'https://example.com/welcome',
     },
   })
+  console.log(userData, supabase)
+  await supabase
+      .from('People')
+      .insert({ UUID: userData.data.user.id, Points: 0})
+    console.log('User signed up successfully:', userData.data.user.id);
 }
 
 </script>
