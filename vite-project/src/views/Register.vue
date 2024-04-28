@@ -10,6 +10,7 @@ const password = ref('')
 
 async function signUpNewUser() {
   const userData = await supabase.auth.signUp({
+    name: name.value,
     email: email.value,
     password: password.value,
     options: {
@@ -17,11 +18,15 @@ async function signUpNewUser() {
     },
   })
   console.log(userData, supabase)
-  await supabase
+  const { data, error } = await supabase
       .from('People')
-      .insert({ UUID: userData.data.user.id, Points: 0})
-    console.log('User signed up successfully:', userData.data.user.id);
-}
+      .insert([{ UUID: userData?.data?.user?.id || null, Points: 0 }])
+      if (error) {
+            console.error('Error inserting user data:', error);
+        } else {
+            console.log('User signed up successfully:', userData?.data?.user?.id || null);
+        }
+    }
 
 </script>
 
