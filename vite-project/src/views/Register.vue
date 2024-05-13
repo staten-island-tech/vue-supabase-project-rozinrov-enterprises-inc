@@ -6,8 +6,6 @@ const name = ref('')
 const email = ref('')
 const password = ref('')
 
-
-
 async function signUpNewUser() {
   const userData = await supabase.auth.signUp({
     name: name.value,
@@ -17,6 +15,7 @@ async function signUpNewUser() {
       emailRedirectTo: 'https://example.com/welcome',
     },
   })
+
   console.log(userData, supabase)
   const { data, error } = await supabase
       .from('People')
