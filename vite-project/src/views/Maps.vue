@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 
 import { Loader } from "@googlemaps/js-api-loader"
@@ -8,15 +9,14 @@ const loader = new Loader({
   apiKey: "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4",
 });
 
-let map: google.maps.Map;
+let map = ref(null)
 
-
-loader.load().then(async () => {
-  const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
-  map = new Map(document.getElementById("map") as HTMLElement, {
-    center: { lat: -34.397, lng: 150.644 },
-    zoom: 8,
-  });
+onMounted(async () => {
+    await loader.load()
+    new window.google.maps.Map(map.value, {
+        center: { lat: -34.397, lng: 150.644 },
+        zoom: 8,
+    });
 });
 
 </script>
@@ -25,13 +25,14 @@ loader.load().then(async () => {
     <div>
         <h1>Google Maps Integration Test</h1>
         <input type="text" placeholder="Input Location" />
-        <div id="map"></div>
+        <div ref="map" id="mapContainer"></div>
     </div>
 </template>
 
 <style>
-  #map {
-    height: 100%;
+  #mapContainer {
+    height: 500px;
+    width: 500px;
   }
   html, body {
     height: 100%;
