@@ -13,30 +13,56 @@ let map = ref(null)
 
 onMounted(async () => {
     await loader.load()
+    const zoom = 17
+    try {
     new window.google.maps.Map(map.value, {
-        center: { lat: -34.397, lng: 150.644 },
-        zoom: 8,
-    });
+        center: { lat: 40.7147, lng: -74.0134 },
+        zoom: zoom,
+        minZoom: zoom - 15,
+        mapTypeId: 'satellite',
+        tilt: 55
+    });}
+    catch (error) {
+        console.log('Error:', error)
+    }
 });
 
 </script>
 
 <template>
-    <div>
-        <h1>Google Maps Integration Test</h1>
-        <input type="text" placeholder="Input Location" />
+    <div id="app">
         <div ref="map" id="mapContainer"></div>
+        <div id="content">
+            <h1>Google Maps Integration Test</h1>
+            <input type="text" placeholder="Input Location" />
+        </div>
     </div>
 </template>
 
 <style>
-  #mapContainer {
-    height: 500px;
-    width: 500px;
+   #mapContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
   }
-  html, body {
+
+  #content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
-    margin: 0;
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
   }
+
+  #content > * {
+    pointer-events: auto;
+  }
+
+
 </style>
