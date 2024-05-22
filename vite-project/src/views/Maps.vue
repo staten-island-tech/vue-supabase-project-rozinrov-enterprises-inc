@@ -13,17 +13,22 @@ let mapDiv = ref(null)
 let map = ref(null)
 let panorama = ref(null)
 
+navigator.geolocation.getCurrentPosition((position) => {
+  console.log(position.coords.latitude, position.coords.longitude);
+})
+
 onMounted(async () => {
     await loader.load()
     const zoom = 17
     try {
+      navigator.geolocation.getCurrentPosition((position) => {
       map.value = new window.google.maps.Map(mapDiv.value, {
-          center: { lat: 40.7147, lng: -74.0134 },
-          zoom: zoom,
-          minZoom: zoom - 15,
-          mapTypeId: 'satellite',
-          tilt: 55
-    })
+        center: { lat: position.coords.latitude, lng: position.coords.longitude },
+        zoom: zoom,
+        minZoom: zoom - 15,
+        mapTypeId: 'satellite',
+        tilt: 55
+    })})
       panorama.value = map.value.getStreetView();
       panorama.value.setPosition({ lat: 40.7147, lng: -74.0134 }); // Set an initial position
       window.google.maps.event.addListener(panorama.value, 'position_changed', function() {
