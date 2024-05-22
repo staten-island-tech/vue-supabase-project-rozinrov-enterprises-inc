@@ -9,21 +9,25 @@ const loader = new Loader({
   apiKey: "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4",
 });
 
+let mapDiv = ref(null)
 let map = ref(null)
+let panorama = ref(null)
 
 onMounted(async () => {
     await loader.load()
     const zoom = 17
     try {
-        map = new window.google.maps.Map(map.value, {
-            center: { lat: 40.7147, lng: -74.0134 },
-            zoom: zoom,
-            minZoom: zoom - 15,
-            mapTypeId: 'satellite',
-            tilt: 55
+      map.value = new window.google.maps.Map(mapDiv.value, {
+          center: { lat: 40.7147, lng: -74.0134 },
+          zoom: zoom,
+          minZoom: zoom - 15,
+          mapTypeId: 'satellite',
+          tilt: 55
     })
-        window.google.maps.event.addListener(panorama, "visible_changed", function() {
-        map.setCenter(panorama.getPosition());
+      panorama.value = map.value.getStreetView();
+      panorama.value.setPosition({ lat: 40.7147, lng: -74.0134 }); // Set an initial position
+      window.google.maps.event.addListener(panorama.value, 'position_changed', function() {
+      alert(panorama.value.getPosition().toString());
     })
     }
     catch (error) {
@@ -31,11 +35,13 @@ onMounted(async () => {
     }
 })
 
+
+
 </script>
 
 <template>
     <div id="app">
-        <div ref="map" id="mapContainer"></div>
+        <div ref="mapDiv" id="mapContainer"></div>
         <div id="content">
             <h1>Google Maps Integration Test</h1>
             <input type="text" placeholder="Input Location" />
