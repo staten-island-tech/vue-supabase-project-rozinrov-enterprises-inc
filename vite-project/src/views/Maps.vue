@@ -15,24 +15,21 @@ onMounted(async () => {
     await loader.load()
     const zoom = 17
     try {
-      new window.google.maps.Map(map.value, {
-          center: { lat: 40.7147, lng: -74.0134 },
-          zoom: zoom,
-          minZoom: zoom - 15,
-          mapTypeId: 'satellite',
-          tilt: 55
+        map = new window.google.maps.Map(map.value, {
+            center: { lat: 40.7147, lng: -74.0134 },
+            zoom: zoom,
+            minZoom: zoom - 15,
+            mapTypeId: 'satellite',
+            tilt: 55
+    })
+        window.google.maps.event.addListener(panorama, "visible_changed", function() {
+        map.setCenter(panorama.getPosition());
     })
     }
     catch (error) {
         console.log('Error:', error)
     }
 })
-
-if ( map.value !== null ) {
-  map.addListener("click", (mapsMouseEvent) => {
-  console.log(mapsMouseEvent.latLng)
-})
-}
 
 </script>
 
