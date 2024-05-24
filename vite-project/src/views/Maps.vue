@@ -12,6 +12,7 @@ const loader = new Loader({
 let mapDiv = ref(null)
 let map = ref(null)
 let panorama = ref(null)
+let available = ref(false)
 
 onMounted(async () => {
     await loader.load()
@@ -27,7 +28,8 @@ onMounted(async () => {
     })
       panorama.value = map.value.getStreetView();
       window.google.maps.event.addListener(panorama.value, 'position_changed', function() {
-        console.log(panorama.value.getPosition().toString());
+        console.log(panorama.value.getPosition().toString())
+        create()
     })
     })
     }
@@ -36,7 +38,10 @@ onMounted(async () => {
     }
 })
 
-
+function create() {
+  available.value = true
+  console.log('Submit availability')
+}
 
 </script>
 
@@ -46,6 +51,7 @@ onMounted(async () => {
         <div id="content">
             <h1>Google Maps Integration Test</h1>
             <input type="text" placeholder="Input Location" />
+            <input type="submit" id="submit" placeholder="Submit" />
         </div>
     </div>
 </template>
@@ -75,5 +81,8 @@ onMounted(async () => {
     pointer-events: auto;
   }
 
+  #submit {
+    margin-top: 35%;
+  }
 
 </style>
