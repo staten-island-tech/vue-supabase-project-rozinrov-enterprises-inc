@@ -12,36 +12,39 @@ const loader = new Loader({
 let mapDiv = ref(null)
 let map = ref(null)
 let panorama = ref(null)
-let available = ref(false)
+let submitVisible = ref(false)
 
 onMounted(async () => {
     await loader.load()
     const zoom = 17
     try {
       navigator.geolocation.getCurrentPosition((position) => {
-      map.value = new window.google.maps.Map(mapDiv.value, {
-        center: { lat: position.coords.latitude, lng: position.coords.longitude },
-        zoom: zoom,
-        minZoom: zoom - 15,
-        mapTypeId: 'satellite',
-        tilt: 55
-    })
-      panorama.value = map.value.getStreetView();
-      window.google.maps.event.addListener(panorama.value, 'position_changed', function() {
-        console.log(panorama.value.getPosition().toString())
-        create()
-    })
-    })
+        map.value = new window.google.maps.Map(mapDiv.value, {
+          center: { lat: position.coords.latitude, lng: position.coords.longitude },
+          zoom: zoom,
+          minZoom: zoom - 15,
+          mapTypeId: 'satellite',
+          tilt: 55
+        })
+
+        panorama.value = map.value.getStreetView();
+        window.google.maps.event.addListener(panorama.value, 'position_changed', function() {
+          console.log(panorama.value.getPosition().toString())
+        })
+
+        window.google.maps.event.addListener(panorama.value, 'visible_changed', function() {
+          const submit = document.querySelector('#submit')
+          submitVisible.value = true
+          submit.addEventListener('submit', function() {
+            console.log('Submitted')
+          })
+        })
+      })
     }
     catch (error) {
         console.log('Error:', error)
     }
 })
-
-function create() {
-  available.value = true
-  console.log('Submit availability')
-}
 
 </script>
 
@@ -51,7 +54,7 @@ function create() {
         <div id="content">
             <h1>Google Maps Integration Test</h1>
             <input type="text" placeholder="Input Location" />
-            <input type="submit" id="submit" placeholder="Submit" />
+            <input type="submit" id="submit" placeholder="Submit" v-if="submitVisible" />
         </div>
     </div>
 </template>
