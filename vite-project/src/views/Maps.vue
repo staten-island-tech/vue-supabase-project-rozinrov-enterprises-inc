@@ -9,7 +9,7 @@ import router from '../router/index.js'
 
 const loader = new Loader({
   apiKey: "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4",
-});
+})
 
 let mapDiv = ref(null)
 let map = ref(null)
@@ -60,7 +60,7 @@ onMounted(async () => {
     <div id="app">
         <div ref="mapDiv" id="mapContainer"></div>
         <div id="content">
-            <h1>Google Maps Integration Test</h1>
+            <h1>Choose Your Location!</h1>
             <input type="text" placeholder="Input Location" />
             <form @submit.prevent="submitForm">
               <input type="submit" id="submit" placeholder="Submit" v-if="submitVisible" />

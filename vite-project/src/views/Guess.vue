@@ -2,8 +2,10 @@
 
 //Guesser's End
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabaseClient'
+import { Loader } from "@googlemaps/js-api-loader"
+import router from '../router/index.js'
 
 let mapDiv = ref(null)
 let map = ref(null)
@@ -11,12 +13,16 @@ let panorama = ref(null)
 let submitVisible = ref(false)
 let submitForm = ref(() => {})
 
+const loader = new Loader({
+  apiKey: "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4",
+})
+
 onMounted(async () => {
     await loader.load()
     const zoom = 17
     try {
         map.value = new window.google.maps.Map(mapDiv.value, {
-            center: { lat: position.coords.latitude, lng: position.coords.longitude },
+            center: { lat: 42.345573, lng: -71.098326 },
             zoom: zoom,
             minZoom: zoom - 15,
             mapTypeId: 'satellite',
@@ -51,7 +57,7 @@ onMounted(async () => {
     <div id="app">
         <div ref="mapDiv" id="mapContainer"></div>
         <div id="content">
-            <h1>Google Maps Integration Test</h1>
+            <h1>Guessing Time!</h1>
             <input type="text" placeholder="Input Location" />
             <form @submit.prevent="submitForm">
               <input type="submit" id="submit" placeholder="Submit" v-if="submitVisible" />
