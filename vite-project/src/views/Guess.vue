@@ -1,15 +1,9 @@
 <script setup lang="ts">
 
-//Post Creation End
+//Guesser's End
 
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
-import { Loader } from "@googlemaps/js-api-loader"
-import router from '../router/index.js'
-
-const loader = new Loader({
-  apiKey: "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4",
-});
 
 let mapDiv = ref(null)
 let map = ref(null)
@@ -21,33 +15,30 @@ onMounted(async () => {
     await loader.load()
     const zoom = 17
     try {
-      navigator.geolocation.getCurrentPosition((position) => {
         map.value = new window.google.maps.Map(mapDiv.value, {
-          center: { lat: position.coords.latitude, lng: position.coords.longitude },
-          zoom: zoom,
-          minZoom: zoom - 15,
-          mapTypeId: 'satellite',
-          tilt: 55
+            center: { lat: position.coords.latitude, lng: position.coords.longitude },
+            zoom: zoom,
+            minZoom: zoom - 15,
+            mapTypeId: 'satellite',
+            tilt: 55
         })
 
         panorama.value = map.value.getStreetView();
         window.google.maps.event.addListener(panorama.value, 'position_changed', function() {
-          console.log(panorama.value.getPosition().toString())
+            console.log(panorama.value.getPosition().toString())
         })
 
         window.google.maps.event.addListener(panorama.value, 'visible_changed', function() {
-          submitVisible.value = true
+            submitVisible.value = true
         })
 
         submitForm.value = function() {
-          console.log("Submitted")
-          console.log(panorama.value.getPosition().toString())
-          //Push get.Position() lat and lng coords to supabase
-          //Include user info (uuid)
-          router.push('/feed')
+            console.log("Submitted")
+            console.log(panorama.value.getPosition().toString())
+            //Push get.Position() lat and lng coords to supabase
+            //Include user info (uuid)
+            router.push('/feed')
         }
-
-      })
     }
     catch (error) {
         console.log('Error:', error)
