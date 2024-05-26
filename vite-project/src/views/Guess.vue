@@ -9,6 +9,8 @@ import router from '../router/index.js'
 
 let mapDiv = ref(null)
 let map = ref(null)
+let smallMapDiv = ref(null)
+let smallMap = ref(null)
 let panorama = ref(null)
 let submitVisible = ref(false)
 let submitForm = ref(() => {})
@@ -29,7 +31,26 @@ onMounted(async () => {
             tilt: 55
         })
 
-        panorama.value = map.value.getStreetView();
+        panorama = new google.maps.StreetViewPanorama(mapDiv.value, {
+            position: map.value.center,
+            pov: {
+                heading: 34,
+                pitch: 10,
+            },
+            disableDefaultUI: true
+            })
+
+        smallMap.value = new window.google.maps.Map(smallMapDiv.value, {
+            center: { lat: 20, lng: 0 },
+            zoom: 1,
+            minZoom: zoom - 15,
+            mapTypeId: 'roadmap',
+            tilt: 55,
+            disableDefaultUI: true,
+            fullscreenControl: true,
+            zoomControl: true
+        })
+
         window.google.maps.event.addListener(panorama.value, 'position_changed', function() {
             console.log(panorama.value.getPosition().toString())
         })
@@ -56,6 +77,7 @@ onMounted(async () => {
 <template>
     <div id="app">
         <div ref="mapDiv" id="mapContainer"></div>
+        <div ref="smallMapDiv" id="smallMapContainer"></div>
         <div id="content">
             <h1>Guessing Time!</h1>
             <input type="text" placeholder="Input Location" />
@@ -73,6 +95,15 @@ onMounted(async () => {
     left: 0;
     width: 100vw;
     height: 100vh;
+  }
+
+  #smallMapContainer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 30vw;
+    height: 30vh;
+    z-index: 2;
   }
 
   #content {
@@ -94,6 +125,10 @@ onMounted(async () => {
 
   #submit {
     margin-top: 35%;
+  }
+
+  #map div.poi-info-window .view-link {
+       display:none;
   }
 
 </style>
