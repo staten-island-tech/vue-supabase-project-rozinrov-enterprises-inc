@@ -5,6 +5,11 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/feed',
+      name: 'feed',
+      component: () => import('../views/Feed.vue')
+    },
+    {
       path: '/register',
       name: 'register',
       component: () => import('../views/Register.vue')
@@ -18,6 +23,16 @@ const router = createRouter({
       path: '/home',
       name: 'home',
       component: () => import('../views/Home.vue')
+    },
+    {
+      path: '/maps',
+      name: 'maps',
+      component: () => import('../views/Maps.vue')
+    },
+    {
+      path: '/guess',
+      name: 'guess',
+      component: () => import('../views/Guess.vue')
     }
 
   ]
