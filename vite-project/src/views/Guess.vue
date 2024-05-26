@@ -48,14 +48,34 @@ onMounted(async () => {
             tilt: 55,
             disableDefaultUI: true,
             fullscreenControl: true,
-            zoomControl: true
+            zoomControl: true,
+            mapId: '279eefc12ed2e257'
         })
 
-        window.google.maps.event.addListener(panorama.value, 'position_changed', function() {
+        let marker = null
+
+        window.google.maps.event.addListener(smallMap.value, 'click', function(event) {
+            if ( marker ) {
+                marker.setMap(null)
+                marker = null
+            }
+            placeMarker(event.latLng)
+        })
+        
+        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+        function placeMarker(location) {
+            marker = new AdvancedMarkerElement({
+                position: location, 
+                map: smallMap.value
+            })
+            console.log(marker.position.toString())
+        }
+
+        window.google.maps.event.addListener(smallMap.value, 'position_changed', function() {
             console.log(panorama.value.getPosition().toString())
         })
 
-        window.google.maps.event.addListener(panorama.value, 'visible_changed', function() {
+        window.google.maps.event.addListener(smallMap.value, 'visible_changed', function() {
             submitVisible.value = true
         })
 
