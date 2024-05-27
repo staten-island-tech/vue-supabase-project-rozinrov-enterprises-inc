@@ -1,10 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 
-//Iterate through all of the post data in supabase
-//Create a series of posts to represent a feed
-//Should basically be like Guess.vue since that represents the guesser's end
+const posts = ref([])
+
+async function fetchPosts() {
+  const { data, error } = await supabase
+    .from('Posts')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching posts:', error.message)
+  } else {
+    posts.value = data
+  }
+}
+
+onMounted(() => {
+  fetchPosts()
+})
 
 </script>
 
@@ -18,6 +33,35 @@ import { supabase } from '../lib/supabaseClient'
         <RouterLink to="/post">Post</RouterLink>
     </nav>
     <div>
-        <h1>Welcome to GeoGuessr Social!</h1>
+    <h1>Welcome to GeoGuessr Social!</h1>
+    <div v-if="posts.length === 0">No posts available.</div>
+    <div v-else>
+      <div v-for="post in posts" :key="post.id" class="post">
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.caption }}</p>
+        <p><small>Posted on: {{ new Date(post.created_at).toLocaleString() }}</small></p>
+      </div>
     </div>
+  </div>
 </template>
+
+<style scoped>
+nav {
+  margin-bottom: 20px;
+}
+
+.post {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+small {
+  color: gray;
+}
+</style>
