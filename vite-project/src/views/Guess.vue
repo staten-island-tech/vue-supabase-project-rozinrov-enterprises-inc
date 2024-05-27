@@ -45,7 +45,6 @@ onMounted(async () => {
             zoom: 1,
             minZoom: zoom - 15,
             mapTypeId: 'roadmap',
-            tilt: 55,
             disableDefaultUI: true,
             fullscreenControl: true,
             zoomControl: true
@@ -57,6 +56,7 @@ onMounted(async () => {
             if ( marker ) {
                 marker.setMap(null)
                 marker = null
+                submitVisible.value = false
             }
             placeMarker(event.latLng)
         })
@@ -66,6 +66,7 @@ onMounted(async () => {
                 position: location, 
                 map: smallMap.value
             })
+            submitVisible.value = true
             console.log(marker.position.toString())
         }
 
@@ -79,7 +80,7 @@ onMounted(async () => {
 
         submitForm.value = function() {
             console.log("Submitted")
-            console.log(panorama.value.getPosition().toString())
+            console.log('Final Coordinates:', marker.position.toString())
             //Push get.Position() lat and lng coords to supabase
             //Include user info (uuid)
             router.push('/feed')
@@ -148,5 +149,4 @@ onMounted(async () => {
   #map div.poi-info-window .view-link {
        display:none;
   }
-
 </style>
