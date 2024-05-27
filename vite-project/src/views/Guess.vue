@@ -2,10 +2,11 @@
 
 //Guesser's End
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, toValue } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import { Loader } from "@googlemaps/js-api-loader"
 import router from '../router/index.js'
+import Login from './Login.vue';
 
 let mapDiv = ref(null)
 let map = ref(null)
@@ -70,21 +71,18 @@ onMounted(async () => {
             console.log(marker.position.toString())
         }
 
-        window.google.maps.event.addListener(smallMap.value, 'position_changed', function() {
-            console.log(panorama.value.getPosition().toString())
-        })
-
-        window.google.maps.event.addListener(smallMap.value, 'visible_changed', function() {
-            submitVisible.value = true
-        })
-
         submitForm.value = function() {
             console.log("Submitted")
             console.log('Final Coordinates:', marker.position.toString())
             //Push get.Position() lat and lng coords to supabase
             //Include user info (uuid)
-            router.push('/feed')
+            check()
         }
+
+        function check() {
+          placeMarker(map.value.center)
+        }
+
     }
     catch (error) {
         console.log('Error:', error)
