@@ -48,8 +48,7 @@ onMounted(async () => {
             tilt: 55,
             disableDefaultUI: true,
             fullscreenControl: true,
-            zoomControl: true,
-            mapId: '279eefc12ed2e257'
+            zoomControl: true
         })
 
         let marker = null
@@ -62,9 +61,8 @@ onMounted(async () => {
             placeMarker(event.latLng)
         })
         
-        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
         function placeMarker(location) {
-            marker = new AdvancedMarkerElement({
+            marker = new window.google.maps.Marker({
                 position: location, 
                 map: smallMap.value
             })
