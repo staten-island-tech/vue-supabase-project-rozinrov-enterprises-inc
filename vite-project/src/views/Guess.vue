@@ -2,7 +2,7 @@
 
 //Guesser's End
 
-import { ref, onMounted, toValue } from 'vue'
+import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import { Loader } from "@googlemaps/js-api-loader"
 import router from '../router/index.js'
@@ -81,6 +81,8 @@ onMounted(async () => {
 
         function check() {
           placeMarker(map.value.center)
+          document.getElementById("smallMapContainer").style.width="100vw"
+          document.getElementById("smallMapContainer").style.height="100vw"
         }
 
     }
@@ -119,7 +121,7 @@ onMounted(async () => {
     bottom: 0;
     right: 0;
     width: 30vw;
-    height: 30vh;
+    height: 40vh;
     z-index: 2;
   }
 
