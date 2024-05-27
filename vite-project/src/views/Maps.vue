@@ -30,7 +30,7 @@ onMounted(async () => {
           tilt: 55
         })
 
-        panorama.value = map.value.getStreetView();
+        panorama.value = map.value.getStreetView()
         window.google.maps.event.addListener(panorama.value, 'position_changed', function() {
           console.log(panorama.value.getPosition().toString())
         })
