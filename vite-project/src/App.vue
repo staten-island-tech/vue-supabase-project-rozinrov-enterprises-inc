@@ -42,8 +42,7 @@ async function signOut() {
 
 <template>
   <div>
-    <nav>
-    </nav>
+    
     <RouterView />
   </div>
 </template>

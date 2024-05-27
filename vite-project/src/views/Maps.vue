@@ -57,6 +57,14 @@ onMounted(async () => {
 </script>
 
 <template>
+  <nav>
+        <RouterLink to="/feed">Feed</RouterLink>
+        <RouterLink to="/maps">Maps</RouterLink>
+        <RouterLink to="/">login</RouterLink>
+        <RouterLink to="/register">Register</RouterLink>
+        <RouterLink to="/guess">Guess</RouterLink>
+        <RouterLink to="/post">Post</RouterLink>
+    </nav>
     <div id="app">
         <div ref="mapDiv" id="mapContainer"></div>
         <div id="content">

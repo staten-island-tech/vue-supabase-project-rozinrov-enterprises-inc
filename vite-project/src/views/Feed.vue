@@ -9,6 +9,14 @@ import { supabase } from '../lib/supabaseClient'
 </script>
 
 <template>
+    <nav>
+        <RouterLink to="/feed">Feed</RouterLink>
+        <RouterLink to="/maps">Maps</RouterLink>
+        <RouterLink to="/">login</RouterLink>
+        <RouterLink to="/register">Register</RouterLink>
+        <RouterLink to="/guess">Guess</RouterLink>
+        <RouterLink to="/post">Post</RouterLink>
+    </nav>
     <div>
         <h1>Welcome to GeoGuessr Social!</h1>
     </div>
