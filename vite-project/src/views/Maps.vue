@@ -2,7 +2,7 @@
 
 //Post Creation End
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted} from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import { Loader } from "@googlemaps/js-api-loader"
 import router from '../router/index.js'
