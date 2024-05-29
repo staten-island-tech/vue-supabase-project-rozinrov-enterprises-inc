@@ -75,7 +75,8 @@ onMounted(async () => {
         }
       })
 }
-
+})
+//add catch
 async function createPost() {
   if (!.value || title.value.trim() === '' || caption.value.trim() === '') {
     message.value = 'Please fill in all fields and select a location on the map.'
