@@ -27,13 +27,14 @@ import { supabase, isLoggedIn } from '../lib/supabaseClient'
 import { Loader } from "@googlemaps/js-api-loader"
 
 const router = useRouter()
-const title = ref('')
-const caption = ref('')
-const message = ref<string | null>(null)
-const mapDiv = ref(null)
-const map = ref(null)
-const marker = ref(null)
-const selectedCoords = ref<{ lat: number; lng: number } | null>(null)
+let title = ref('')
+let caption = ref('')
+let message = ref<string | null>(null)
+let mapDiv = ref(null)
+let map = ref(null)
+let panorama = ref(null)
+let submitVisible = ref(false)
+let submitForm = ref(() => {})
 
 const loader = new Loader({
   apiKey: "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4",
@@ -45,28 +46,38 @@ onMounted(async () => {
   }
 
   await loader.load()
-  map.value = new window.google.maps.Map(mapDiv.value, {
-    center: { lat: 0, lng: 0 },
-    zoom: 2,
-  })
+    const zoom = 17
+    try {
+      navigator.geolocation.getCurrentPosition((position) => {
+        map.value = new window.google.maps.Map(mapDiv.value, {
+          center: { lat: position.coords.latitude, lng: position.coords.longitude },
+          zoom: zoom,
+          minZoom: zoom - 15,
+          mapTypeId: 'satellite',
+          tilt: 55
+        })
 
-  map.value.addListener('click', (event) => {
-    if (marker.value) {
-      marker.value.setMap(null)
-    }
-    marker.value = new window.google.maps.Marker({
-      position: event.latLng,
-      map: map.value,
-    })
-    selectedCoords.value = {
-      lat: event.latLng.lat(),
-      lng: event.latLng.lng(),
-    }
-  })
-})
+        panorama.value = map.value.getStreetView()
+        window.google.maps.event.addListener(panorama.value, 'position_changed', function() {
+          console.log(panorama.value.getPosition().toString())
+        })
+
+        window.google.maps.event.addListener(panorama.value, 'visible_changed', function() {
+          submitVisible.value = true
+        })
+
+        submitForm.value = function() {
+          console.log("Submitted")
+          console.log(panorama.value.getPosition().toString())
+          //Push get.Position() lat and lng coords to supabase
+          //Include user info (uuid)
+          router.push('/feed') 
+        }
+      })
+}
 
 async function createPost() {
-  if (!selectedCoords.value || title.value.trim() === '' || caption.value.trim() === '') {
+  if (!.value || title.value.trim() === '' || caption.value.trim() === '') {
     message.value = 'Please fill in all fields and select a location on the map.'
     return
   }
@@ -82,8 +93,8 @@ async function createPost() {
       title: title.value,
       caption: caption.value,
       created_at: new Date().toISOString(),
-      lat: selectedCoords.value.lat,
-      lng: selectedCoords.value.lng
+      lat: map.value.lat,
+      lng: map.value.lng
     }
   ])
 
