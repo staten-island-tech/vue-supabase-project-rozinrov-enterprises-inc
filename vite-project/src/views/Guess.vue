@@ -25,7 +25,7 @@ onMounted(async () => {
     const zoom = 17
     try {
         map.value = new window.google.maps.Map(mapDiv.value, {
-            center: { lat: 42.345573, lng: -71.098326 },
+            center: { lat: 52.5163, lng: 13.3777 },
             zoom: zoom,
             minZoom: zoom - 15,
             mapTypeId: 'satellite',
