@@ -32,7 +32,7 @@ onMounted(async () => {
             tilt: 55
         })
 
-        panorama = new google.maps.StreetViewPanorama(mapDiv.value, {
+        panorama.value = new window.google.maps.StreetViewPanorama(mapDiv.value, {
             position: map.value.center,
             pov: {
                 heading: 34,
