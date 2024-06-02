@@ -42,7 +42,6 @@ onMounted(() => {
       <div v-for="post in posts" :key="post.id" class="post">
         <h2>{{ post.title }}</h2>
         <p>{{ post.caption }}</p>
-        <img :src="StreetView(post.lat, post.lng)" alt="Street View Image" />
         <p><small>Posted on: {{ new Date(post.created_at).toLocaleString() }}</small></p>
       </div>
     </div>
