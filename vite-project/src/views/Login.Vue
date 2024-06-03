@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabaseClient'
 import { useRouter } from 'vue-router'
 import { isLoggedIn } from '../lib/supabaseClient'
 
+
 const email = ref('')
 const password = ref('')
 const errorMessage = ref<string | null>(null)
@@ -31,6 +32,8 @@ async function signInWithEmail() {
     }, 2000) 
   }
 }
+
+
 </script>
 
 <template>
