@@ -25,9 +25,14 @@ const router = createRouter({
       component: () => import('../views/Maps.vue')
     },
     {
-      path: '/guess',
+      path: '/guess/:id/:lat/:lng',
       name: 'guess',
-      component: () => import('../views/Guess.vue')
+      component: () => import('../views/Guess.vue'),
+      props: route => ({
+        id: route.params.post_id,
+        lat: parseFloat(route.params.lat),
+        lng: parseFloat(route.params.lng)
+      })
     },
     {
       path: '/post',

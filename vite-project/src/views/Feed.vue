@@ -4,6 +4,11 @@ import { supabase } from '../lib/supabaseClient'
 
 const posts = ref([])
 
+function streetView(lat: number, lng: number): string {
+  const apiKey = "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4"
+  return `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${lat},${lng}&key=${apiKey}`
+}
+
 async function fetchPosts() {
   const { data, error } = await supabase
     .from('Posts')
@@ -19,6 +24,22 @@ async function fetchPosts() {
   }
 }
 
+async function startView() {
+  await loader.load()
+  posts.value.forEach(post => {
+    const panoramaDiv = document.getElementById(`panorama-${post.post_id}`)
+    if (panoramaDiv) {
+      new google.maps.StreetViewPanorama(panoramaDiv, {
+        position: { lat: post.lat, lng: post.lng },
+        pov: {
+          heading: 34,
+          pitch: 10,
+        },
+        visible: true,
+      })
+    }
+  })
+}
 
 onMounted(() => {
   fetchPosts()
@@ -42,7 +63,11 @@ onMounted(() => {
       <div v-for="post in posts" :key="post.id" class="post">
         <h2>{{ post.title }}</h2>
         <p>{{ post.caption }}</p>
+        <img :src="streetView(post.lat, post.lng)" alt="Street View Image" />
         <p><small>Posted on: {{ new Date(post.created_at).toLocaleString() }}</small></p>
+        <RouterLink :to="{ name: 'guess', params: { id: post.post_id, lat: post.lat, lng: post.lng } }">
+        <button>Guess</button>
+      </RouterLink>
       </div>
     </div>
   </div>

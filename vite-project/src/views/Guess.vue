@@ -22,6 +22,8 @@ import { Loader } from "@googlemaps/js-api-loader"
 
 const route = useRoute()
 const postId = route.params.id
+const lat = route.params.lat
+const lng = route.params.lng
 
 const post = ref(null)
 const streetViewDiv = ref(null)
@@ -35,12 +37,13 @@ const loader = new Loader({
 })
 
 onMounted(async () => {
+  console.log(postId, lat,lng)
   await loader.load()
   
   const { data, error } = await supabase
     .from('Posts')
     .select('*')
-    .eq('id', postId)
+    .eq('post_id', postId)
     .single()
 
   if (error) {
@@ -48,13 +51,13 @@ onMounted(async () => {
     console.error('Error loading post:', error.message)
   } else {
     post.value = data
-    initMaps(data)
+    initMaps(lat, lng)
   }
 })
 
-function initMaps(postData) {
+function initMaps(la,ln) {
   const streetViewOptions = {
-    position: { lat: postData.lat, lng: postData.lng },
+    position: { lat: la, lng: ln },
     pov: { heading: 34, pitch: 10 },
     disableDefaultUI: true,
   }

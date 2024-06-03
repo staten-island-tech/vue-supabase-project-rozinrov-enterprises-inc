@@ -121,6 +121,10 @@ async function createPost() {
     title.value = ''
     caption.value = ''
     console.log('Post created successfully:', data)
+    setTimeout(() => {
+      isLoggedIn.value = true
+      router.push('/feed')
+    }, 2000) 
   }
 }
 </script>
