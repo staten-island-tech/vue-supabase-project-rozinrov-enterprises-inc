@@ -23,7 +23,7 @@ onMounted(async () => {
     const zoom = 17
     try {
         map.value = new window.google.maps.Map(mapDiv.value, {
-            center: { lat: 52.5163, lng: 13.3777 },
+            center: { lat: 42.345573, lng: -71.098326 },
             zoom: zoom,
             minZoom: zoom - 15,
             mapTypeId: 'satellite',
@@ -87,6 +87,9 @@ onMounted(async () => {
     catch (error) {
         console.log('Error:', error)
     }
+
+    const google = 'https://maps.googleapis.com/maps/api/distancematrix/json?destinations=40.659569%2C-73.933783%7C&origins=40.6655101%2C-73.89188969999998&key=AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4'
+    console.log(google[0])
 })
 
 </script>
