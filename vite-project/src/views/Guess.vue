@@ -16,16 +16,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { supabase } from '../lib/supabaseClient'
-import { Loader } from "@googlemaps/js-api-loader"
+import usePostStore from '../post'
+import { Loader } from '@googlemaps/js-api-loader'
 
-const route = useRoute()
-const postId = route.params.id
-const lat = route.params.lat
-const lng = route.params.lng
-
-const post = ref(null)
+const store = usePostStore()
+const post = ref(store.selectedPost)
 const streetViewDiv = ref(null)
 const guessMapDiv = ref(null)
 const message = ref('')
@@ -33,31 +28,21 @@ const guessMarker = ref(null)
 const guessedCoords = ref<{ lat: number; lng: number } | null>(null)
 
 const loader = new Loader({
-  apiKey: "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4",
+  apiKey: 'AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4',
 })
 
 onMounted(async () => {
-  console.log(postId, lat,lng)
-  await loader.load()
-  
-  const { data, error } = await supabase
-    .from('Posts')
-    .select('*')
-    .eq('post_id', postId)
-    .single()
-
-  if (error) {
-    message.value = 'Error loading post: ' + error.message
-    console.error('Error loading post:', error.message)
+  if (post.value) {
+    await loader.load()
+    initMaps(post.value.lat, post.value.lng)
   } else {
-    post.value = data
-    initMaps(lat, lng)
+    message.value = 'Post not found.'
   }
 })
 
-function initMaps(la,ln) {
+function initMaps(lat: number, lng: number) {
   const streetViewOptions = {
-    position: { lat: la, lng: ln },
+    position: { lat, lng },
     pov: { heading: 34, pitch: 10 },
     disableDefaultUI: true,
   }

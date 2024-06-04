@@ -1,10 +1,37 @@
+<template>
+  <nav>
+    <RouterLink to="/feed">Feed</RouterLink>
+    <RouterLink to="/maps">Maps</RouterLink>
+    <RouterLink to="/">Login</RouterLink>
+    <RouterLink to="/register">Register</RouterLink>
+    <RouterLink to="/guess">Guess</RouterLink>
+    <RouterLink to="/post">Post</RouterLink>
+  </nav>
+  <div>
+    <h1>Welcome to GeoGuessr Social!</h1>
+    <div v-if="posts.length === 0">No posts available.</div>
+    <div v-else>
+      <div v-for="post in posts" :key="post.post_id" class="post">
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.caption }}</p>
+        <img :src="streetView(post.lat, post.lng)" alt="Street View Image" />
+        <p><small>Posted on: {{ new Date(post.created_at).toLocaleString() }}</small></p>
+        <button @click="selectPost(post)">
+          <RouterLink :to="{ name: 'guess' }">Guess</RouterLink>
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabaseClient'
+import usePostStore from '../post'
 
-const posts = ref([])
+const store = usePostStore()
 
-function streetView(lat: number, lng: number): string {
+const streetView = (lat: number, lng: number) => {
   const apiKey = "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4"
   return `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${lat},${lng}&key=${apiKey}`
 }
@@ -18,60 +45,20 @@ async function fetchPosts() {
   if (error) {
     console.error('Error fetching posts:', error.message)
   } else {
-    posts.value = data
-    await nextTick()
-    
+    store.setPosts(data)
   }
 }
 
-async function startView() {
-  await loader.load()
-  posts.value.forEach(post => {
-    const panoramaDiv = document.getElementById(`panorama-${post.post_id}`)
-    if (panoramaDiv) {
-      new google.maps.StreetViewPanorama(panoramaDiv, {
-        position: { lat: post.lat, lng: post.lng },
-        pov: {
-          heading: 34,
-          pitch: 10,
-        },
-        visible: true,
-      })
-    }
-  })
+function selectPost(post: { post_id: string, lat: number, lng: number }) {
+  store.selectPost(post)
 }
 
 onMounted(() => {
   fetchPosts()
 })
 
+const posts = store.posts
 </script>
-
-<template>
-  <nav>
-    <RouterLink to="/feed">Feed</RouterLink>
-    <RouterLink to="/maps">Maps</RouterLink>
-    <RouterLink to="/">login</RouterLink>
-    <RouterLink to="/register">Register</RouterLink>
-    <RouterLink to="/guess">Guess</RouterLink>
-    <RouterLink to="/post">Post</RouterLink>
-  </nav>
-  <div>
-    <h1>Welcome to GeoGuessr Social!</h1>
-    <div v-if="posts.length === 0">No posts available.</div>
-    <div v-else>
-      <div v-for="post in posts" :key="post.id" class="post">
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.caption }}</p>
-        <img :src="streetView(post.lat, post.lng)" alt="Street View Image" />
-        <p><small>Posted on: {{ new Date(post.created_at).toLocaleString() }}</small></p>
-        <RouterLink :to="{ name: 'guess', params: { id: post.post_id, lat: post.lat, lng: post.lng } }">
-        <button>Guess</button>
-      </RouterLink>
-      </div>
-    </div>
-  </div>
-</template>
 
 <style scoped>
 nav {
