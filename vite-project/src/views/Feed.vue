@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { supabase } from '../lib/supabaseClient'
 
 //Iterate through all of the post data in supabase
 //Create a series of posts to represent a feed

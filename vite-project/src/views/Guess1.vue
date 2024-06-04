@@ -3,10 +3,7 @@
 //Guesser's End
 
 import { ref, onMounted } from 'vue'
-import { supabase } from '../lib/supabaseClient'
 import { Loader } from "@googlemaps/js-api-loader"
-import router from '../router/index.js'
-import Login from './Login.vue';
 
 let mapDiv = ref(null)
 let map = ref(null)
@@ -19,6 +16,7 @@ let submitForm = ref(() => {})
 const loader = new Loader({
   apiKey: "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4",
 })
+
 
 onMounted(async () => {
     await loader.load()

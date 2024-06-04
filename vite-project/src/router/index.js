@@ -27,7 +27,7 @@ const router = createRouter({
     {
       path: '/guess',
       name: 'guess',
-      component: () => import('../views/Guess.vue')
+      component: () => import('../views/Guess1.vue')
     }
   ]
 })
