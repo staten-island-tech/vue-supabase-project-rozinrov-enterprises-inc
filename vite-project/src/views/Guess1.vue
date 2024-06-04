@@ -49,9 +49,9 @@ onMounted(async () => {
             zoomControl: true
         })
 
-        let marker = null
+        let marker: google.maps.Marker | null = null
 
-        window.google.maps.event.addListener(smallMap.value, 'click', function(event) {
+        window.google.maps.event.addListener(smallMap.value, 'click', function(event: { latLng: any; }) {
             if ( marker ) {
                 marker.setMap(null)
                 marker = null
@@ -60,13 +60,18 @@ onMounted(async () => {
             placeMarker(event.latLng)
         })
         
-        function placeMarker(location) {
+        let markerLat = 0
+        let markerLng = 0
+        function placeMarker(location: any) {
             marker = new window.google.maps.Marker({
                 position: location, 
                 map: smallMap.value
             })
             submitVisible.value = true
             console.log(marker.position.toString())
+            const formatted = marker.position.toString().replace(/[(),]/g, '').split(' ')
+            markerLat = formatted[0]
+            markerLng = formatted[0]
         }
 
         submitForm.value = function() {
@@ -81,15 +86,34 @@ onMounted(async () => {
           placeMarker(map.value.center)
           document.getElementById("smallMapContainer").style.width="100vw"
           document.getElementById("smallMapContainer").style.height="100vw"
+          getDistance(markerLat, markerLng, 40.6892, -74.0445)
+          console.log(map.value.center.lat.toString())
+        }
+
+        function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+          let R = 6371 // Radius of the earth in km
+          let dLat = deg2rad(lat2-lat1)  // deg2rad below
+          let dLon = deg2rad(lon2-lon1) 
+          let a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2)
+          
+          let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+          let d = R * c // Distance in km
+          console.log(d + ' KM')
+          let points = 4999.91 * (0.998036) ** d
+          console.log(points + ' Points')
+        }
+
+        function deg2rad(deg: number) {
+          return deg * (Math.PI/180)
         }
 
     }
     catch (error) {
         console.log('Error:', error)
     }
-
-    const google = 'https://maps.googleapis.com/maps/api/distancematrix/json?destinations=40.659569%2C-73.933783%7C&origins=40.6655101%2C-73.89188969999998&key=AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4'
-    console.log(google[0])
 })
 
 </script>
