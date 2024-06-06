@@ -6,6 +6,9 @@
     <RouterLink to="/register">Register</RouterLink>
     <RouterLink to="/guess">Guess</RouterLink>
     <RouterLink to="/post">Post</RouterLink>
+    <div class="points">
+      Total Points: {{ totalPoints }}
+    </div>
   </nav>
   <div>
     <h1>Welcome to GeoGuessr Social!</h1>
@@ -30,6 +33,7 @@ import { supabase } from '../lib/supabaseClient'
 import usePostStore from '../post'
 
 const store = usePostStore()
+const totalPoints = ref(0)
 
 const streetView = (lat: number, lng: number) => {
   const apiKey = "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4"
@@ -49,11 +53,29 @@ async function fetchPosts() {
   }
 }
 
+async function fetchPoints() {
+  const user = await supabase.auth.getUser()
+  if (!user) {
+    console.error('User is not logged in.')
+    return }
+
+  const { data, error } = await supabase
+    .from('Games')
+    .select('points')
+    .eq('user_id', user.data.user.id)
+
+  if (error) {
+    console.error('Error fetching points:', error.message)
+  } else {
+    totalPoints.value = data.reduce((sum, game) => sum + game.points, 0)
+  }
+}
 function selectPost(post: { post_id: string, lat: number, lng: number }) {
   store.selectPost(post)
 }
 
 onMounted(() => {
+  fetchPoints()
   fetchPosts()
 })
 
@@ -70,6 +92,14 @@ nav {
   padding: 15px;
   margin-bottom: 15px;
   border-radius: 10px;
+}
+
+.points {
+  margin-left: auto;
+  padding: 10px;
+  background-color: black;
+  border-radius: 10px;
+  font-weight: bold;
 }
 
 h2 {
