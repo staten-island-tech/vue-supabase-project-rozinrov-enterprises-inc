@@ -1,4 +1,11 @@
 <template>
+  <nav id="navbar">
+      <RouterLink to="/feed">Feed</RouterLink>
+      <button id="logout" @click="signOutCurrentUser">Logout</button>
+      <div class="points">
+        Total Points: {{ totalPoints }}
+      </div>
+    </nav>
   <div v-if="isLoggedIn">
     <div ref="mapDiv" id="map"></div>
     <div v-if="submitVisible" class="form-container">
@@ -42,11 +49,13 @@ const loader = new Loader({
   apiKey: 'AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4',
 })
 
+async function signOutCurrentUser() {
+  await supabase.auth.signOut();
+  router.push('/')
+}
+
 onMounted(async () => {
-  if (!isLoggedIn.value) {
-    router.push('/')
-    return
-  }
+
 
   user.value = await supabase.auth.getUser()
   console.log(user.value.id)
@@ -130,6 +139,19 @@ async function createPost() {
 </script>
 
 <style scoped>
+#navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40x;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 10;
+}
+
 #map {
   position: absolute;
   top: 0;

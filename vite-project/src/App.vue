@@ -36,7 +36,11 @@ async function signInWithEmail() {
 async function signOut() {
   const { error } = await supabase.auth.signOut()
 } */
-
+const handleSignOut = () => {
+  signOut(getAuth()).then(() => {
+    router.push('/')
+  })
+}
 
 </script>
 

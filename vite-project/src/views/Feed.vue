@@ -1,8 +1,9 @@
 <template>
   <div>
-    <nav>
+    <nav id="navbar">
       <RouterLink to="/">Login</RouterLink>
       <RouterLink to="/post">Post</RouterLink>
+      <button @click="signOutCurrentUser">Logout</button>
       <div class="points">
         Total Points: {{ totalPoints }}
       </div>
@@ -54,7 +55,7 @@
 import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import usePostStore from '../post'
-
+import { useRouter } from 'vue-router'
 
 const store = usePostStore()
 const totalPoints = ref(0)
@@ -62,6 +63,13 @@ const userId = ref(null)
 const showEditModal = ref(false)
 const editPostData = ref({ post_id: '', title: '', caption: '' })
 const loading = ref(true)
+const router = useRouter()
+
+async function signOutCurrentUser() {
+  await supabase.auth.signOut();
+  router.push('/')
+}
+
 
 const streetView = (lat: number, lng: number) => {
   const apiKey = "AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4"
@@ -163,8 +171,17 @@ const posts = store.posts
 </script>
 
 <style scoped>
-nav {
-  margin-bottom: 20px;
+#navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 10;
 }
 
 .post {
@@ -172,14 +189,6 @@ nav {
   padding: 15px;
   margin-bottom: 15px;
   border-radius: 10px;
-}
-
-.points {
-  margin-left: auto;
-  padding: 10px;
-  background-color: black;
-  border-radius: 10px;
-  font-weight: bold;
 }
 
 h2 {

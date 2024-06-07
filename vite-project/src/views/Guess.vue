@@ -1,19 +1,28 @@
 <template>
-  <div v-if="post">
-    <h1>{{ post.title }}</h1>
-    <div ref="mapDiv" id="mapContainer"></div>
-    <div ref="smallMapDiv" id="smallMapContainer"></div>
-    <div id="content">
-      <h1>Guessing Time!</h1>
-      <input type="text" placeholder="Input Location" />
-      <form @submit.prevent="submitForm">
-        <input type="submit" id="submit" placeholder="Submit" v-if="submitVisible" />
-      </form>
-      <div v-if="message">{{ message }}</div>
+  <div>
+    <nav id="navbar">
+      <RouterLink to="/post">Post</RouterLink>
+      <RouterLink to="/feed">Feed</RouterLink>
+      <button id="logout" @click="signOutCurrentUser">Logout</button>
+      <div class="points">
+        Total Points: {{ totalPoints }}
+      </div>
+    </nav>
+    <div v-if="post">
+      <h1>{{ post.title }}</h1>
+      <div ref="mapDiv" id="mapContainer"></div>
+      <div ref="smallMapDiv" id="smallMapContainer"></div>
+      <div id="content">
+        <h1>Guessing Time!</h1>
+        <form @submit.prevent="submitForm">
+          <input type="submit" id="submit" placeholder="Submit" v-if="submitVisible" />
+        </form>
+        <div v-if="message">{{ message }}</div>
+      </div>
     </div>
-  </div>
-  <div v-else>
-    <p>Loading post...</p>
+    <div v-else>
+      <p>Loading post...</p>
+    </div>
   </div>
 </template>
 
@@ -22,6 +31,7 @@ import { ref, onMounted } from 'vue'
 import usePostStore from '../post'
 import { Loader } from '@googlemaps/js-api-loader'
 import { supabase } from '../lib/supabaseClient'
+import {useRouter} from 'vue-router'
 
 const store = usePostStore()
 const post = ref(store.selectedPost)
@@ -34,10 +44,16 @@ const submitVisible = ref(false)
 const canPlace = ref(true)
 const submitForm = ref(() => {})
 const message = ref('')
+const router = useRouter()
 
 const loader = new Loader({
   apiKey: 'AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4',
 })
+
+async function signOutCurrentUser() {
+  await supabase.auth.signOut();
+  router.push('/')
+}
 
 onMounted(async () => {
   if (post.value) {
@@ -208,6 +224,18 @@ function initMaps(lat: number, lng: number) {
 </script>
 
 <style scoped>
+#navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 10;
+}
 #mapContainer {
   position: absolute;
   top: 0;
