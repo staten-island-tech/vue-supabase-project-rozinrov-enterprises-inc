@@ -20,6 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/router/index.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/router/index.ts", "src/lib/supabaseClient.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
