@@ -2,9 +2,6 @@
   <nav id="navbar">
       <RouterLink to="/feed">Feed</RouterLink>
       <button id="logout" @click="signOutCurrentUser">Logout</button>
-      <div class="points">
-        Total Points: {{ totalPoints }}
-      </div>
     </nav>
   <div v-if="isLoggedIn">
     <div ref="mapDiv" id="map"></div>
@@ -39,103 +36,106 @@ const router = useRouter()
 const title = ref('')
 const caption = ref('')
 const message = ref<string | null>(null)
-const mapDiv = ref(null)
-const map = ref(null)
-const panorama = ref(null)
-const submitVisible = ref(false)
-let user = ref(null)
+let mapDiv = ref<HTMLElement | null>(null)
+let map = ref<any | null>(null)
+let panorama = ref<any | null>(null)
+let submitVisible = ref(false)
+let user = ref<any | null>(null)
 
 const loader = new Loader({
   apiKey: 'AIzaSyDALWA-g2AFNDsDyYFlo43-1mjrP3KsoL4',
 })
 
 async function signOutCurrentUser() {
-  await supabase.auth.signOut();
-  router.push('/')
+  try {
+    await supabase.auth.signOut()
+    router.push('/')
+  } catch (error) {
+    console.error('Error signing out:', error)
+    message.value = 'Failed to sign out. Please try again.'
+  }
 }
 
 onMounted(async () => {
-
-
-  user.value = await supabase.auth.getUser()
-  console.log(user.value.id)
-
-  if (!user.value) {
-    message.value = 'User not logged in.'
-    return
-  }
-
   try {
+    const userResponse = await supabase.auth.getUser()
+    user.value = userResponse.data.user
+
+    if (!user.value) {
+      message.value = 'User not logged in.'
+      return
+    }
+
     await loader.load()
+
     const zoom = 17
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      if (mapDiv.value !== null) {
         map.value = new window.google.maps.Map(mapDiv.value, {
           center: { lat: position.coords.latitude, lng: position.coords.longitude },
           zoom: zoom,
           minZoom: zoom - 15,
           mapTypeId: 'satellite',
-          tilt: 55,
+          tilt: 55
         })
 
         panorama.value = map.value.getStreetView()
-        window.google.maps.event.addListener(panorama.value, 'visible_changed', function () {
-          if (panorama.value.getVisible()) {
-            console.log('Street View activated')
-            submitVisible.value = true
-          } else {
-            console.log('Street View deactivated')
-            submitVisible.value = false
-          }
+        window.google.maps.event.addListener(panorama.value, 'position_changed', function() {
+          console.log(panorama.value.getPosition().toString())
         })
-      },
-      (error) => {
-        console.error('Error getting location:', error.message)
-        message.value = 'Error getting location: ' + error.message
+
+        window.google.maps.event.addListener(panorama.value, 'visible_changed', function() {
+          submitVisible.value = true
+        })
       }
-    )
+    })
   } catch (error) {
-    console.error('Error loading Google Maps:', error)
-    message.value = 'Error loading Google Maps: ' + error.message
+    console.error('Error loading map or getting user:', error)
+    message.value = 'Failed to initialize. Please try again.'
   }
 })
 
 async function createPost() {
-  if (!panorama.value || title.value.trim() === '' || caption.value.trim() === '') {
-    message.value = 'Please fill in all fields and select a location on the map.'
-    return
-  }
+  try {
+    if (!panorama.value || title.value.trim() === '' || caption.value.trim() === '') {
+      message.value = 'Please fill in all fields and select a location on the map.'
+      return
+    }
 
-  if (!user.value) {
-    message.value = 'User not logged in.'
-    return
-  }
+    if (!user.value) {
+      message.value = 'User not logged in.'
+      return
+    }
 
-  const position = panorama.value.getPosition()
-  const { data, error } = await supabase.from('Posts').insert([
-    {
-      title: title.value,
-      caption: caption.value,
-      created_at: new Date().toISOString(),
-      lat: position.lat(),
-      lng: position.lng(),
-    },
-  ])
+    const position = panorama.value.getPosition()
+    const { data, error } = await supabase.from('Posts').insert([
+      {
+        title: title.value,
+        caption: caption.value,
+        created_at: new Date().toISOString(),
+        lat: position.lat(),
+        lng: position.lng(),
+      },
+    ])
 
-  if (error) {
-    message.value = 'Error creating post: ' + error.message
-    console.error('Error creating post:', error.message)
-  } else {
-    message.value = 'Post created successfully!'
-    title.value = ''
-    caption.value = ''
-    console.log('Post created successfully:', data)
-    setTimeout(() => {
-      isLoggedIn.value = true
-      router.push('/feed')
-    }, 2000) 
+    if (error) {
+      throw new Error('Error creating post: ' + error.message)
+    } else {
+      message.value = 'Post created successfully!'
+      title.value = ''
+      caption.value = ''
+      console.log('Post created successfully:', data)
+      setTimeout(() => {
+        isLoggedIn.value = true
+        router.push('/feed')
+      }, 2000)
+    }
+  } catch (error) {
+    console.error('Error creating post:', error)
+    message.value = 'Failed to create post. Please try again.'
   }
 }
+
 </script>
 
 <style scoped>
