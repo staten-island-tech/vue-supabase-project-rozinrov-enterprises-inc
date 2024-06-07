@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { supabase } from '../lib/supabaseClient'
-import { RouterLink, RouterView } from 'vue-router'
+import {RouterView } from 'vue-router'
 
 
 /* const users = ref([])
@@ -36,27 +34,14 @@ async function signInWithEmail() {
 async function signOut() {
   const { error } = await supabase.auth.signOut()
 } */
-const handleSignOut = () => {
-  signOut(getAuth()).then(() => {
-    router.push('/')
-  })
-}
+
 
 </script>
 
 <template>
   <div>
-<<<<<<< HEAD
     <nav>
-      <RouterLink to="/feed">Feed</RouterLink>
-      <RouterLink to="/maps">Maps</RouterLink>
-      <RouterLink to="/guess">Guess</RouterLink>
-      <RouterLink to="/login">Log In</RouterLink>
-      <RouterLink to="/register">Register</RouterLink>
     </nav>
-=======
-    
->>>>>>> main
     <RouterView />
   </div>
 </template>
