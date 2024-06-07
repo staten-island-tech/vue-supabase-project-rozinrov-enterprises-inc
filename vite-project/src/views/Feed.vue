@@ -23,7 +23,7 @@
           <p><small>Posted on: {{ new Date(post.created_at).toLocaleString() }}</small></p>
           <p><small>Times Played: {{ post.played }}</small></p>
           <button @click="selectPost(post)">
-            <RouterLink :to="{ name: 'guess' }">Guess</RouterLink>
+            <RouterLink :to="{ name: 'guess1' }">Guess</RouterLink>
           </button>
           <button v-if="post.user_id === userId" @click="editPost(post)">Edit</button>
           <button v-if="post.user_id === userId" @click="deletePost(post.post_id)">Delete</button>
