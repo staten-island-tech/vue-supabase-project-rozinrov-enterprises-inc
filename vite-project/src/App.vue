@@ -1,24 +1,48 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted} from 'vue'
-import { supabase } from './lib/supabaseClient'
+import { ref, onMounted } from 'vue'
+import { supabase } from '../lib/supabaseClient'
 import { RouterLink, RouterView } from 'vue-router'
 
 
-const session = ref(null)
+/* const users = ref([])
 
-onMounted(async () => {
-  // Retrieve the current session when the component is mounted
-  session.value = await supabase.auth.session()
+async function getUsers() {
+  const { data } = await supabase.from('People').select()
+  users.value = data
+}
+
+onMounted(() => {
+  getUsers()
 })
 
-// Sign out function
-const signOut = async () => {
-  await supabase.auth.signOut()
+console.log(users)
+
+async function signUpNewUser() {
+  const { data, error } = await supabase.auth.signUp({
+    email: 'example3@email.com',
+    password: 'example-password',
+  })
 }
+
+signUpNewUser()
+
+async function signInWithEmail() {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: 'example@email.com',
+    password: 'example-password',
+  })
+}
+
+async function signOut() {
+  const { error } = await supabase.auth.signOut()
+} */
+
+
 </script>
 
 <template>
   <div>
+    
     <RouterView />
   </div>
 </template>

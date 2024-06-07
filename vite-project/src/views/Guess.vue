@@ -1,32 +1,19 @@
 <template>
-  <div>
-    <nav>
-      <RouterLink to="/feed">Feed</RouterLink>
-      <RouterLink to="/maps">Maps</RouterLink>
-      <RouterLink to="/">Login</RouterLink>
-      <RouterLink to="/register">Register</RouterLink>
-      <RouterLink to="/guess">Guess</RouterLink>
-      <RouterLink to="/post">Post</RouterLink>
-      <div class="points">
-        Total Points: {{ totalPoints }}
-      </div>
-    </nav>
-    <div v-if="post">
-      <h1>{{ post.title }}</h1>
-      <div ref="mapDiv" id="mapContainer"></div>
-      <div ref="smallMapDiv" id="smallMapContainer"></div>
-      <div id="content">
-        <h1>Guessing Time!</h1>
-        <input type="text" placeholder="Input Location" />
-        <form @submit.prevent="submitForm">
-          <input type="submit" id="submit" placeholder="Submit" v-if="submitVisible" />
-        </form>
-        <div v-if="message">{{ message }}</div>
-      </div>
+  <div v-if="post">
+    <h1>{{ post.title }}</h1>
+    <div ref="mapDiv" id="mapContainer"></div>
+    <div ref="smallMapDiv" id="smallMapContainer"></div>
+    <div id="content">
+      <h1>Guessing Time!</h1>
+      <input type="text" placeholder="Input Location" />
+      <form @submit.prevent="submitForm">
+        <input type="submit" id="submit" placeholder="Submit" v-if="submitVisible" />
+      </form>
+      <div v-if="message">{{ message }}</div>
     </div>
-    <div v-else>
-      <p>Loading post...</p>
-    </div>
+  </div>
+  <div v-else>
+    <p>Loading post...</p>
   </div>
 </template>
 
@@ -122,6 +109,7 @@ function initMaps(lat: number, lng: number) {
     console.log('Submitted')
     console.log('Final Coordinates:', marker.position.toString())
     check(markerLat, markerLng)
+    incrementPlayed(post.value.post_id) // Add this line
   }
 
   function check(markerLat: number, markerLng: number) {
@@ -137,7 +125,7 @@ function initMaps(lat: number, lng: number) {
   async function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
     let R = 6371 // Radius of the earth in km
     let dLat = deg2rad(lat2 - lat1) // deg2rad below
-    let dLon = deg2rad(lon2 - lon1)
+    let dLon = deg2rad(lon1 - lon2)
     let a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
@@ -149,17 +137,68 @@ function initMaps(lat: number, lng: number) {
     let points = 4999.91 * (0.998036) ** d
     let pointsFinal = Math.round(points)
     console.log(pointsFinal)
-    const { data, error } = await supabase.from('Games').insert([
-    {
-      post_id: post.value.post_id,
-      points: pointsFinal
+    try {
+      const { data, error } = await supabase.from('Games').insert([
+        {
+          post_id: post.value.post_id,
+          points: pointsFinal
+        }
+      ])
+      if (error) {
+        message.value = error.message
+        console.error(error.message)
+      } else {
+        alert('You received ' + pointsFinal + ' Points')
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      message.value = 'Failed to submit the form. Please try again.'
     }
-  ])
-  if (error) {
-    message.value = error.message
-    console.error(error.message)
   }
-    alert('You received ' + pointsFinal + ' Points')
+
+  async function getCurrentPlayed(postId: number) {
+    try {
+      const { data, error } = await supabase
+        .from('Posts')
+        .select('played')
+        .eq('post_id', postId)
+        .single()
+        console.log(data)
+      
+      if (error) {
+        console.error('Error fetching played count:', error)
+        message.value = 'Failed to fetch played count. Please try again.'
+        return null
+      } else {
+        console.log(data.played)
+        return data.played
+      }
+    } catch (error) {
+      console.error('Error fetching played count:', error)
+      message.value = 'Failed to fetch played count. Please try again.'
+      return null
+    }
+  }
+
+  async function incrementPlayed(postId: number) {
+    let currentPlayed = await getCurrentPlayed(postId)
+    console.log(currentPlayed)
+    let newValue = currentPlayed + 1
+    console.log(newValue)
+      try {
+        const { data, error } = await supabase
+          .from('Posts')
+          .update({ played: newValue })
+          .eq('post_id', postId)
+        
+        if (error) {
+          console.error('Error incrementing played count:', error)
+          message.value = 'Failed to increment played count. Please try again.'
+        }
+      } catch (error) {
+        console.error('Error incrementing played count:', error)
+        message.value = 'Failed to increment played count. Please try again.'
+      }
   }
 
   function deg2rad(deg: number) {

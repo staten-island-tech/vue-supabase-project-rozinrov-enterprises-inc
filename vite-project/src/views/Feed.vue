@@ -20,6 +20,7 @@
           <p>{{ post.caption }}</p>
           <img :src="streetView(post.lat, post.lng)" alt="Street View Image" />
           <p><small>Posted on: {{ new Date(post.created_at).toLocaleString() }}</small></p>
+          <p><small>Times Played: {{ post.played }}</small></p>
           <button @click="selectPost(post)">
             <RouterLink :to="{ name: 'guess' }">Guess</RouterLink>
           </button>
