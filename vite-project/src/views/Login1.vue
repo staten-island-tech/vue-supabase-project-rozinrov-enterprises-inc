@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
+import {useRouter} from 'vue-router'
 
 const email = ref('')
 const password = ref('')
-
+const router = useRouter()
 console.log('hi')
 
 async function signInWithEmail() {
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: email.value,
     password: password.value
   })
-  return error
+  console.log(data, error)
+  setTimeout(() => {
+    router.push('/feed')
+    }, 2000) 
 }
 </script>
 
