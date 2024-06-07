@@ -40,9 +40,13 @@ async function signOut() {
 <template>
   <div>
     <nav>
+      <RouterLink to="/feed">Feed</RouterLink>
+      <RouterLink to="/maps">Maps</RouterLink>
+      <RouterLink to="/guess">Guess</RouterLink>
+      <RouterLink to="/login">Log In</RouterLink>
+      <RouterLink to="/register">Register</RouterLink>
     </nav>
     <RouterView />
-    <h1>a</h1>
   </div>
 </template>
 
