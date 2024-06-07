@@ -2,9 +2,16 @@
 import { ref } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 
-const name = ref('')
-const email = ref('')
-const password = ref('')
+
+const props = defineProps<{
+  initialName: string
+  initialEmail: string
+  initialPassword: string
+}>()
+
+const name = ref(props.initialName || '')
+const email = ref(props.initialEmail || '')
+const password = ref(props.initialPassword || '')
 
 async function signUpNewUser() {
   const userData = await supabase.auth.signUp({
@@ -16,7 +23,7 @@ async function signUpNewUser() {
   })
 
   console.log(userData, supabase)
-  const { error } = await supabase
+  const {error } = await supabase
       .from('People')
       .insert([{ UUID: userData?.data?.user?.id || null, Points: 0 }])
       if (error) {
@@ -29,11 +36,19 @@ async function signUpNewUser() {
 </script>
 
 <template>
-    <div>
-        <h1>Create an Account</h1>
-        <input type="text" v-model="name" placeholder="Full Name" />
-        <input type="text" v-model="email" placeholder="Email" />
-        <input type="password" v-model="password" placeholder="Password" />
-        <button @click="signUpNewUser">Submit</button>
-    </div>
+  <nav>
+    <RouterLink to="/feed">Feed</RouterLink>
+    <RouterLink to="/maps">Maps</RouterLink>
+    <RouterLink to="/">login</RouterLink>
+    <RouterLink to="/register">Register</RouterLink>
+    <RouterLink to="/guess">Guess</RouterLink>
+    <RouterLink to="/post">Post</RouterLink>
+  </nav>
+  <div>
+    <h1>Create an Account</h1>
+    <input type="text" v-model="name" placeholder="Username" />
+    <input type="text" v-model="email" placeholder="Email" />
+    <input type="password" v-model="password" placeholder="Password" />
+    <button @click="signUpNewUser">Submit</button>
+  </div>
 </template>
