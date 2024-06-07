@@ -59,7 +59,7 @@ import { useRouter } from 'vue-router'
 
 const store = usePostStore()
 const totalPoints = ref(0)
-const userId = ref(null)
+const userId = ref<string | null>(null)
 const showEditModal = ref(false)
 const editPostData = ref({ post_id: '', title: '', caption: '' })
 const loading = ref(true)
@@ -97,10 +97,10 @@ async function fetchPoints() {
     console.error('User is not logged in.')
     return }
 
-  const { data, error } = await supabase
+  if (user.data.user !== null){ const { data, error } = await supabase
     .from('Games')
     .select('points')
-    .eq('user_id', user.data.user.id)
+    .eq('user_id', user.data.user.id) 
 
   if (error) {
     console.error('Error fetching points:', error.message)
@@ -108,13 +108,13 @@ async function fetchPoints() {
     totalPoints.value = data.reduce((sum, game) => sum + game.points, 0)
   }
 }
-
+}
 async function retryFetchPosts() {
   console.log(userId)
   await fetchPosts()
 }
 
-function selectPost(post: { post_id: string, lat: number, lng: number }) {
+function selectPost(post: {title: string, post_id: string, lat: number, lng: number }) {
   store.selectPost(post)
 }
 
@@ -154,7 +154,7 @@ async function deletePost(postId: string) {
   if (error) {
     console.error('Error deleting post:', error.message)
   } else {
-    store.removePost(postId)
+    store.deletePost(postId)
   }
 }
 
@@ -162,10 +162,13 @@ onMounted(async () => {
   await fetchPosts()
   await fetchPoints()
   const user = await supabase.auth.getUser()
+  if (userId.value !== null) {
+    userId.toString()
   if (user) {
+    if (userId.value !== null && user.data.user !== null) {
     userId.value = user.data.user.id
-  }
-})
+    }} }
+}) 
 
 const posts = store.posts
 </script>

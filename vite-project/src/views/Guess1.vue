@@ -4,12 +4,8 @@
       <RouterLink to="/post">Post</RouterLink>
       <RouterLink to="/feed">Feed</RouterLink>
       <button id="logout" @click="signOutCurrentUser">Logout</button>
-      <div class="points">
-        Total Points: {{ totalPoints }}
-      </div>
     </nav>
     <div v-if="post">
-      <h1>{{ post.title }}</h1>
       <div ref="mapDiv" id="mapContainer"></div>
       <div ref="smallMapDiv" id="smallMapContainer"></div>
       <div id="content">
@@ -30,7 +26,7 @@
 import { ref, onMounted } from 'vue'
 import usePostStore from '../post'
 import { Loader } from '@googlemaps/js-api-loader'
-import  supabase  from '../lib/supabaseClient'
+import { supabase } from '../lib/supabaseClient'
 import {useRouter} from 'vue-router'
 
 const store = usePostStore()
@@ -235,7 +231,10 @@ onMounted(async () => {
   function deg2rad(deg: number) {
     return deg * (Math.PI / 180)
   }
-}})
+  
+} catch (error) {
+    console.error('Error initializing maps:', error)
+  }})
 </script>
 
 <style scoped>
