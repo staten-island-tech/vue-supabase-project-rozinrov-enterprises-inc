@@ -38,12 +38,8 @@ async function signInWithEmail() {
 
 <template>
   <nav>
-    <RouterLink to="/feed">Feed</RouterLink>
-    <RouterLink to="/maps">Maps</RouterLink>
-    <RouterLink to="/">Login</RouterLink>
+    
     <RouterLink to="/register">Register</RouterLink>
-    <RouterLink to="/guess">Guess</RouterLink>
-    <RouterLink to="/post">Post</RouterLink>
   </nav>
   <div>
     <h1>Sign in to your account!</h1>

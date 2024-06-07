@@ -1,19 +1,32 @@
 <template>
-  <div v-if="post">
-    <h1>{{ post.title }}</h1>
-    <div ref="mapDiv" id="mapContainer"></div>
-    <div ref="smallMapDiv" id="smallMapContainer"></div>
-    <div id="content">
-      <h1>Guessing Time!</h1>
-      <input type="text" placeholder="Input Location" />
-      <form @submit.prevent="submitForm">
-        <input type="submit" id="submit" placeholder="Submit" v-if="submitVisible" />
-      </form>
-      <div v-if="message">{{ message }}</div>
+  <div>
+    <nav>
+      <RouterLink to="/feed">Feed</RouterLink>
+      <RouterLink to="/maps">Maps</RouterLink>
+      <RouterLink to="/">Login</RouterLink>
+      <RouterLink to="/register">Register</RouterLink>
+      <RouterLink to="/guess">Guess</RouterLink>
+      <RouterLink to="/post">Post</RouterLink>
+      <div class="points">
+        Total Points: {{ totalPoints }}
+      </div>
+    </nav>
+    <div v-if="post">
+      <h1>{{ post.title }}</h1>
+      <div ref="mapDiv" id="mapContainer"></div>
+      <div ref="smallMapDiv" id="smallMapContainer"></div>
+      <div id="content">
+        <h1>Guessing Time!</h1>
+        <input type="text" placeholder="Input Location" />
+        <form @submit.prevent="submitForm">
+          <input type="submit" id="submit" placeholder="Submit" v-if="submitVisible" />
+        </form>
+        <div v-if="message">{{ message }}</div>
+      </div>
     </div>
-  </div>
-  <div v-else>
-    <p>Loading post...</p>
+    <div v-else>
+      <p>Loading post...</p>
+    </div>
   </div>
 </template>
 
