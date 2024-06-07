@@ -8,11 +8,11 @@ const password = ref('')
 console.log('hi')
 
 async function signInWithEmail() {
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({
     email: email.value,
     password: password.value
   })
-  console.log(data, error)
+  return error
 }
 </script>
 
