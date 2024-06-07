@@ -10,8 +10,9 @@ console.log('hi')
 async function signInWithEmail() {
   const { data, error } = await supabase.auth.signInWithPassword({
     email: email.value,
-    password: password.value,
+    password: password.value
   })
+  console.log(data, error)
 }
 </script>
 

@@ -5,11 +5,11 @@
 import { ref, onMounted } from 'vue'
 import { Loader } from "@googlemaps/js-api-loader"
 
-let mapDiv = ref(null)
-let map = ref(null)
-let smallMapDiv = ref(null)
-let smallMap = ref(null)
-let panorama = ref(null)
+let map = ref<any | null>(null)
+let smallMap = ref<any | null>(null)
+let panorama = ref<any | null>(null)
+let mapDiv = ref<HTMLElement | null>(null)
+let smallMapDiv = ref<HTMLElement | null>(null)
 let submitVisible = ref(false)
 let canPlace = ref(true)
 let submitForm = ref(() => {})
@@ -23,6 +23,7 @@ onMounted(async () => {
     await loader.load()
     const zoom = 17
     try {
+      if (mapDiv.value !== null && smallMapDiv.value !== null) {
         map.value = new window.google.maps.Map(mapDiv.value, {
             center: { lat: 42.345573, lng: -71.098326 },
             zoom: zoom,
@@ -49,11 +50,11 @@ onMounted(async () => {
             fullscreenControl: true,
             zoomControl: true
         })
-
+      }
         let marker: google.maps.Marker | null = null
 
         window.google.maps.event.addListener(smallMap.value, 'click', function(event: { latLng: any; }) {
-            if ( marker && canPlace.value ) {
+            if (marker && canPlace.value) {
                 marker.setMap(null)
                 marker = null
                 submitVisible.value = false
@@ -64,33 +65,45 @@ onMounted(async () => {
         let markerLat = 0
         let markerLng = 0
         function placeMarker(location: any) {
-          if ( canPlace.value ) {
-            marker = new window.google.maps.Marker({
-                position: location, 
-                map: smallMap.value
-            })
-          } else {
-            console.log('Already submitted. No more markers can be placed.')
-          }
-            submitVisible.value = true
-            console.log(marker.position.toString())
-            const formatted = marker.position.toString().replace(/[(),]/g, '').split(' ')
-            markerLat = formatted[0]
-            markerLng = formatted[1]
+        if (canPlace.value) {
+          marker = new window.google.maps.Marker({
+              position: location, 
+              map: smallMap.value
+          })
+        } else {
+          console.log('Already submitted. No more markers can be placed.')
         }
+          submitVisible.value = true
+          if (marker !== null) {
+            let markerPosition = marker.getPosition();
+            if (markerPosition !== null && markerPosition !== undefined) {
+              console.log('Final Coordinates:', markerPosition.toString())
+              const formatted = markerPosition.toString().replace(/[(),]/g, '').split(' ')
+              markerLat = parseFloat(formatted[0])
+              markerLng = parseFloat(formatted[1])
+            }
+          }
+      }
 
-        submitForm.value = function() {
-            console.log("Submitted")
-            console.log('Final Coordinates:', marker.position.toString())
+      submitForm.value = function() {
+          console.log("Submitted")
+          if (marker !== null) {
+            let markerPosition = marker.getPosition();
+            if (markerPosition !== null && markerPosition !== undefined) {
+              console.log('Final Coordinates:', markerPosition.toString())
+            }
             //Push get.Position() lat and lng coords to supabase
             //Include user info (uuid)
             check(markerLat, markerLng)
-        }
-
+          }
+      }
         function check(markerLat: number, markerLng: number) {
           placeMarker(map.value.center)
-          document.getElementById("smallMapContainer").style.width="100vw"
-          document.getElementById("smallMapContainer").style.height="100vw"
+          const smallMapContainer = document.getElementById("smallMapContainer")
+            if (smallMapContainer) {
+                smallMapContainer.style.width = "100vw"
+                smallMapContainer.style.height = "100vw"
+            }
           console.log(markerLat, markerLng)
           console.log(map.value.center.lat(), map.value.center.lng())
           getDistance(markerLat, markerLng, map.value.center.lat(), map.value.center.lng())
